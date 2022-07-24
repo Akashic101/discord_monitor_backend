@@ -37,7 +37,29 @@ module.exports = {
             }
         });
 
+        const Users = sequelize.define('users', {
+			id: {
+				type: Sequelize.INTEGER,
+				unique: true,
+				alllowNull: false,
+				primaryKey: true
+			},
+			userId: {
+				type: Sequelize.STRING,
+				unique: true
+			},
+			username: Sequelize.STRING,
+			avatar: Sequelize.STRING,
+			banner: Sequelize.INTEGER,
+			accentColor: Sequelize.INTEGER,
+			bot: Sequelize.INTEGER,
+			createdAt: Sequelize.INTEGER,
+			discriminator: Sequelize.STRING,
+			messagesSend: Sequelize.INTEGER
+		});
+
         Channels.sync();
+        Users.sync();
 
         try {
 
@@ -45,6 +67,12 @@ module.exports = {
 
             if (databaseChannel) {
                 databaseChannel.increment('messageCount');
+            }
+
+            const databaseUser = await Users.findOne({ where: { userId: message.author.id } });
+
+            if (databaseUser) {
+                databaseUser.increment('messagesSend');
             }
         }
         catch (error) {

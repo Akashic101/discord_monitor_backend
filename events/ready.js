@@ -1,5 +1,6 @@
 const { Sequelize } = require('sequelize');
 const { Client } = require('discord.js');
+const { STRING } = require('sequelize');
 
 module.exports = {
 	name: 'ready',
@@ -62,8 +63,31 @@ module.exports = {
 			}
 		});
 
+		const Users = sequelize.define('users', {
+			id: {
+				type: Sequelize.INTEGER,
+				unique: true,
+				alllowNull: false,
+				primaryKey: true
+			},
+			userId: {
+				type: Sequelize.STRING,
+				unique: true
+			},
+			username: Sequelize.STRING,
+			nickname: Sequelize.STRING,
+			avatar: Sequelize.STRING,
+			banner: Sequelize.INTEGER,
+			accentColor: Sequelize.STRING,
+			bot: Sequelize.INTEGER,
+			createdAt: Sequelize.INTEGER,
+			discriminator: Sequelize.STRING,
+			messagesSend: Sequelize.INTEGER
+		});
+
 		Channels.sync();
 		Roles.sync();
+		Users.sync();
 
 		//sync channels
 
@@ -97,8 +121,6 @@ module.exports = {
 
 		//sync roles
 
-
-
 		client.guilds.cache.map(guild => guild.roles.cache.forEach(async role => {
 
 			const databaseRole = await Roles.findOne({ where: { roleId: role.id, } });
@@ -118,14 +140,43 @@ module.exports = {
 					});
 				}
 				catch (error) {
-					if (error.name === 'SequelizeUniqueConstraintError') {
-						return console.log('That role already exists.');
-					}
+					console.log(error)
 				}
 				return console.log(`Role ${role.name} added.`);
 			}
 		}))
 
-	console.log(`Ready! Logged in as ${client.user.tag}`);
-},
+		//sync user
+		const Guilds = client.guilds.cache.map((guild) => guild);
+		Guilds[0].members.fetch().then((members) => {
+			members.map(async (member) => {
+
+				try {
+					let person = Guilds[0].members.cache.get(member.id);
+					const databaseUser = await Users.findOne({ where: { userId: member.id } });
+
+					if (!databaseUser) {
+
+						await Users.create({
+							userId: person.user.id,
+							username: person.user.username,
+							nickname: member.nickname,
+							avatar: person.user.avatarURL(),
+							banner: person.user.bannerURL(),
+							accentColor: person.user.hexAccentColor,
+							bot: person.user.bot,
+							createdAt: person.user.createdAt,
+							discriminator: person.user.discriminator,
+							messagesSend: 0
+						});
+					}
+				}
+				catch (error) {
+					console.log(error)
+				}
+			})
+		})
+
+		console.log(`Ready! Logged in as ${client.user.tag}`);
+	},
 };
