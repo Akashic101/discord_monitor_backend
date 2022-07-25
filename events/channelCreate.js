@@ -40,7 +40,7 @@ module.exports = {
 		Channels.sync();
 
         try {
-            const createdChannel = await Channels.create({
+            await Channels.create({
                 createdAt: channel.createdAt,
                 channelID: channel.id,
                 channelName: channel.name,

@@ -44,9 +44,7 @@ module.exports = {
 		}
 
 		catch (error) {
-			if (error.name === 'SequelizeUniqueConstraintError') {
-				return console.log('That channel already exists.');
-			}
+			console.error(error);
 		}
 		return console.log(`Channel ${channel.name} deleted.`);
 	},

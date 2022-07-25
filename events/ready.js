@@ -91,14 +91,14 @@ module.exports = {
 
 		//sync channels
 
-		client.channels.cache.map(async (item, i) => {
+		client.channels.cache.map(async (item) => {
 
 			const databaseChannel = await Channels.findOne({ where: { channelID: item.id } });
 
 			if (!databaseChannel) {
 
 				try {
-					const channel = await Channels.create({
+					await Channels.create({
 						createdAt: item.createdAt,
 						channelID: item.id,
 						channelName: item.name,
@@ -148,8 +148,6 @@ module.exports = {
 
 				try {
 					let person = Guilds[0].members.cache.get(member.id);
-
-					Guilds[0].roles.forEach(role => console.log(role.name, role.id))
 					const databaseUser = await Users.findOne({ where: { userId: member.id } });
 
 					if (!databaseUser) {

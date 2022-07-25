@@ -42,7 +42,7 @@ module.exports = {
 		try {
 			await Channels.destroy({ where: { channelID: oldChannel.id } });
 
-			const createdChannel = await Channels.create({
+			await Channels.create({
                 createdAt: newChannel.createdAt,
                 channelID: newChannel.id,
                 channelName: newChannel.name,
