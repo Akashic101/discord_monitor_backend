@@ -22,7 +22,7 @@ module.exports = {
 			},
 			name: Sequelize.STRING,
 			color: Sequelize.INTEGER,
-			createdAt: Sequelize.INTEGER,
+			createdAt: Sequelize.DATEONLY,
 			icon: Sequelize.STRING,
 			roleId: {
 				type: Sequelize.STRING,

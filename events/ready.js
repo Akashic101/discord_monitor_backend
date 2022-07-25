@@ -22,7 +22,7 @@ module.exports = {
 				alllowNull: false,
 				primaryKey: true
 			},
-			createdAt: Sequelize.INTEGER,
+			createdAt: Sequelize.DATEONLY,
 			channelID: Sequelize.STRING,
 			channelName: Sequelize.STRING,
 			channelTopic: Sequelize.STRING,
@@ -48,7 +48,7 @@ module.exports = {
 			},
 			name: Sequelize.STRING,
 			color: Sequelize.INTEGER,
-			createdAt: Sequelize.INTEGER,
+			createdAt: Sequelize.DATEONLY,
 			icon: Sequelize.STRING,
 			roleId: {
 				type: Sequelize.STRING,
@@ -80,7 +80,7 @@ module.exports = {
 			banner: Sequelize.INTEGER,
 			accentColor: Sequelize.STRING,
 			bot: Sequelize.INTEGER,
-			createdAt: Sequelize.INTEGER,
+			createdAt: Sequelize.DATEONLY,
 			discriminator: Sequelize.STRING,
 			messagesSend: Sequelize.INTEGER
 		});
@@ -108,13 +108,9 @@ module.exports = {
 						url: item.url,
 						type: item.type
 					});
-
-					return console.log(`Channel ${channel.channelName} added.`);
 				}
 				catch (error) {
-					if (error.name === 'SequelizeUniqueConstraintError') {
-						return console.log('That channel already exists.');
-					}
+					console.error(error)
 				}
 			}
 		});
@@ -140,9 +136,8 @@ module.exports = {
 					});
 				}
 				catch (error) {
-					console.log(error)
+					console.error(error)
 				}
-				return console.log(`Role ${role.name} added.`);
 			}
 		}))
 
@@ -153,6 +148,8 @@ module.exports = {
 
 				try {
 					let person = Guilds[0].members.cache.get(member.id);
+
+					Guilds[0].roles.forEach(role => console.log(role.name, role.id))
 					const databaseUser = await Users.findOne({ where: { userId: member.id } });
 
 					if (!databaseUser) {
@@ -172,7 +169,7 @@ module.exports = {
 					}
 				}
 				catch (error) {
-					console.log(error)
+					console.error(error)
 				}
 			})
 		})

@@ -20,7 +20,7 @@ module.exports = {
 				alllowNull: false,
 				primaryKey: true
 			},
-			createdAt: Sequelize.INTEGER,
+			createdAt: Sequelize.DATEONLY,
 			channelID: Sequelize.STRING,
 			channelName: Sequelize.STRING,
 			channelTopic: Sequelize.STRING,

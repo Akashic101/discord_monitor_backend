@@ -20,7 +20,7 @@ module.exports = {
                 alllowNull: false,
                 primaryKey: true
             },
-            createdAt: Sequelize.INTEGER,
+            createdAt: Sequelize.DATEONLY,
             channelID: Sequelize.STRING,
             channelName: Sequelize.STRING,
             channelTopic: Sequelize.STRING,
@@ -53,7 +53,7 @@ module.exports = {
 			banner: Sequelize.INTEGER,
 			accentColor: Sequelize.INTEGER,
 			bot: Sequelize.INTEGER,
-			createdAt: Sequelize.INTEGER,
+			createdAt: Sequelize.DATEONLY,
 			discriminator: Sequelize.STRING,
 			messagesSend: Sequelize.INTEGER
 		});
