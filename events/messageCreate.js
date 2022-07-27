@@ -49,13 +49,15 @@ module.exports = {
 				unique: true
 			},
 			username: Sequelize.STRING,
+			nickname: Sequelize.STRING,
 			avatar: Sequelize.STRING,
 			banner: Sequelize.INTEGER,
-			accentColor: Sequelize.INTEGER,
+			accentColor: Sequelize.STRING,
 			bot: Sequelize.INTEGER,
 			createdAt: Sequelize.DATEONLY,
 			discriminator: Sequelize.STRING,
-			messagesSend: Sequelize.INTEGER
+			messagesSend: Sequelize.INTEGER,
+			highestRole: Sequelize.STRING
 		});
 
         Channels.sync();

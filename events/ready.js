@@ -1,6 +1,4 @@
-const { Sequelize } = require('sequelize');
-const { Client } = require('discord.js');
-const { STRING } = require('sequelize');
+const Sequelize = require('sequelize');
 
 module.exports = {
 	name: 'ready',
@@ -36,7 +34,8 @@ module.exports = {
 			messageCount: {
 				type: Sequelize.INTEGER,
 				defaultValue: 0
-			}
+			},
+			color: Sequelize.STRING
 		});
 
 		const Roles = sequelize.define('roles', {
@@ -82,7 +81,9 @@ module.exports = {
 			bot: Sequelize.INTEGER,
 			createdAt: Sequelize.DATEONLY,
 			discriminator: Sequelize.STRING,
-			messagesSend: Sequelize.INTEGER
+			messagesSend: Sequelize.INTEGER,
+			highestRoleID: Sequelize.INTEGER,
+			highestRoleName: Sequelize.STRING
 		});
 
 		Channels.sync();
@@ -98,6 +99,11 @@ module.exports = {
 			if (!databaseChannel) {
 
 				try {
+
+					let colorBase = item.parentId || 764329
+					let colorConverted = colorBase.toString()
+					let colorSliced = colorConverted.slice(-6)
+
 					await Channels.create({
 						createdAt: item.createdAt,
 						channelID: item.id,
@@ -106,7 +112,8 @@ module.exports = {
 						channelNSFW: item.channelNSFW,
 						parentID: item.parentId,
 						url: item.url,
-						type: item.type
+						type: item.type,
+						color: colorSliced
 					});
 				}
 				catch (error) {
@@ -147,7 +154,11 @@ module.exports = {
 			members.map(async (member) => {
 
 				try {
+
+					let memberHighestRole = member.roles
+
 					let person = Guilds[0].members.cache.get(member.id);
+
 					const databaseUser = await Users.findOne({ where: { userId: member.id } });
 
 					if (!databaseUser) {
@@ -156,13 +167,16 @@ module.exports = {
 							userId: person.user.id,
 							username: person.user.username,
 							nickname: member.nickname,
-							avatar: person.user.avatarURL(),
+							avatar: person.user.displayAvatarURL({ format: 'jpg', size: 256 }),
 							banner: person.user.bannerURL(),
-							accentColor: person.user.hexAccentColor,
+							accentColor: member.displayHexColor,
 							bot: person.user.bot,
 							createdAt: person.user.createdAt,
 							discriminator: person.user.discriminator,
-							messagesSend: 0
+							messagesSend: 0,
+							highestRoleID: memberHighestRole.highest.position,
+							highestRoleName: memberHighestRole.highest.name
+
 						});
 					}
 				}

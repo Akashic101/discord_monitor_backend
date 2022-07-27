@@ -2,11 +2,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, GatewayIntentBits, User } = require('discord.js');
 const { token } = require('./config.json');
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 
 const express = require('express')
 const app = express()
 const port = 5000
+
+var cors = require('cors');
 
 //-----------------------------SEQUELIZE-----------------------------
 
@@ -39,7 +41,8 @@ const Channels = sequelize.define('channels', {
 	messageCount: {
 		type: Sequelize.INTEGER,
 		defaultValue: 0
-	}
+	},
+	color: Sequelize.STRING
 });
 
 const Users = sequelize.define('users', {
@@ -54,13 +57,16 @@ const Users = sequelize.define('users', {
 		unique: true
 	},
 	username: Sequelize.STRING,
+	nickname: Sequelize.STRING,
 	avatar: Sequelize.STRING,
 	banner: Sequelize.INTEGER,
-	accentColor: Sequelize.INTEGER,
+	accentColor: Sequelize.STRING,
 	bot: Sequelize.INTEGER,
 	createdAt: Sequelize.DATEONLY,
 	discriminator: Sequelize.STRING,
-	messagesSend: Sequelize.INTEGER
+	messagesSend: Sequelize.INTEGER,
+	highestRoleID: Sequelize.INTEGER,
+	highestRoleName: Sequelize.STRING
 });
 
 const Roles = sequelize.define('roles', {
@@ -120,21 +126,38 @@ client.login(token);
 
 //-----------------------------API-----------------------------
 
-app.get('/channel/:channelID/:data?', async function (req, res) {
+app.use(cors({ origin: true, credentials: true }));
 
-	const channel = await Channels.findOne({ where: { channelID: req.params.channelID } });
+app.get('/channel/:channelID?/:data?', async function (req, res) {
 
-	if (channel === null) {
-		res.send('Not found!');
-	} else {
-		if (req.params.data) {
-			res.send(channel.get(req.params.data));
-			return;
+	if (req.params.channelID) {
+		const channel = await Channels.findOne({ where: { channelID: req.params.channelID } });
+
+		if (channel === null) {
+			res.send('Not found!');
+		} else {
+			if (req.params.data) {
+				res.send(channel.get(req.params.data));
+				return;
+			}
+			else {
+				res.json(channel);
+				return;
+			}
 		}
-		else {
-			res.json(channel);
-			return;
-		}
+	}
+	else {
+		const users = await Channels.findAll({where: {
+			parentID: {
+			  [Op.not]: null
+			}
+		  },
+			order: [
+				["messageCount", "DESC"],
+				["parentID", "DESC"]
+			]
+		})
+		res.json(users);
 	}
 })
 
@@ -156,24 +179,37 @@ app.get('/role/:roleID/:data?', async function (req, res) {
 	}
 })
 
-app.get('/user/:userID/:data?', async function (req, res) {
+app.get('/user/:userID?/:data?', async function (req, res) {
 
-	const user = await Users.findOne({ where: { userID: req.params.userID } });
+	if (req.params.userID) {
+		const user = await Users.findOne({ where: { userID: req.params.userID } });
 
-	if (user === null) {
-		res.send('Not found!');
-	} else {
-		if (req.params.data) {
-			res.send(user.get(req.params.data));
-			return;
-		}
-		else {
-			res.json(user);
-			return;
+		if (user === null) {
+			res.send('Not found!');
+		} else {
+			if (req.params.data) {
+				res.send(user.get(req.params.data));
+				return;
+			}
+			else {
+				res.json(user);
+				return;
+			}
 		}
 	}
+	else {
+		const users = await Users.findAll({
+			order: [
+				["highestRoleID", "DESC"],
+				["messagesSend", "DESC"],
+				["bot", "ASC"]
+			]
+		})
+		res.json(users);
+	}
+
 })
 
 app.listen(port, () => {
-	console.log(`Listening on port ${port}`)
+	console.log(`Listening on port ${port}: http://localhost:5000`)
 })
