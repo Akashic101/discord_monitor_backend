@@ -161,21 +161,32 @@ app.get('/channel/:channelID?/:data?', async function (req, res) {
 	}
 })
 
-app.get('/role/:roleID/:data?', async function (req, res) {
+app.get('/role/:roleID?/:data?', async function (req, res) {
 
-	const role = await Roles.findOne({ where: { roleID: req.params.channelID } });
+	if (req.params.roleID) {
+		const user = await Roles.findOne({ where: { roleId: req.params.roleID } });
 
-	if (role === null) {
-		res.send('Not found!');
-	} else {
-		if (req.params.data) {
-			res.send(role.get(req.params.data));
-			return;
+		if (user === null) {
+			res.send('Not found!');
+		} else {
+			if (req.params.data) {
+				res.send(user.get(req.params.data));
+				return;
+			}
+			else {
+				res.json(user);
+				return;
+			}
 		}
-		else {
-			res.json(role);
-			return;
-		}
+	}
+	else {
+		const roles = await Roles.findAll({
+			order: [
+				["memberCount", "DESC"],
+				["createdAt", "DESC"]
+			]
+		})
+		res.json(roles);
 	}
 })
 

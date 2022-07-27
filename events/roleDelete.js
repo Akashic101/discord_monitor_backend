@@ -21,7 +21,7 @@ module.exports = {
 				primaryKey: true
 			},
 			name: Sequelize.STRING,
-			color: Sequelize.INTEGER,
+			color: Sequelize.STRING,
 			createdAt: Sequelize.DATEONLY,
 			icon: Sequelize.STRING,
 			roleId: {

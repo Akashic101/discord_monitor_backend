@@ -21,7 +21,7 @@ module.exports = {
 				primaryKey: true
 			},
 			name: Sequelize.STRING,
-			color: Sequelize.INTEGER,
+			color: Sequelize.STRING,
 			createdAt: Sequelize.DATEONLY,
 			icon: Sequelize.STRING,
 			roleId: {
@@ -43,7 +43,7 @@ module.exports = {
 
 		await Roles.create({
 			name: newRole.name,
-			color: newRole.color,
+			color: newRole.hexColor,
 			createdAt: newRole.createdAt,
 			icon: newRole.icon,
 			roleId: newRole.id,
