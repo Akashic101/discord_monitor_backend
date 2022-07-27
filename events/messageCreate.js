@@ -38,27 +38,28 @@ module.exports = {
         });
 
         const Users = sequelize.define('users', {
-			id: {
-				type: Sequelize.INTEGER,
-				unique: true,
-				alllowNull: false,
-				primaryKey: true
-			},
-			userId: {
-				type: Sequelize.STRING,
-				unique: true
-			},
-			username: Sequelize.STRING,
-			nickname: Sequelize.STRING,
-			avatar: Sequelize.STRING,
-			banner: Sequelize.INTEGER,
-			accentColor: Sequelize.STRING,
-			bot: Sequelize.INTEGER,
-			createdAt: Sequelize.DATEONLY,
-			discriminator: Sequelize.STRING,
-			messagesSend: Sequelize.INTEGER,
-			highestRole: Sequelize.STRING
-		});
+            id: {
+                type: Sequelize.INTEGER,
+                unique: true,
+                alllowNull: false,
+                primaryKey: true
+            },
+            userId: {
+                type: Sequelize.STRING,
+                unique: true
+            },
+            username: Sequelize.STRING,
+            nickname: Sequelize.STRING,
+            avatar: Sequelize.STRING,
+            banner: Sequelize.INTEGER,
+            accentColor: Sequelize.STRING,
+            bot: Sequelize.INTEGER,
+            createdAt: Sequelize.DATEONLY,
+            discriminator: Sequelize.STRING,
+            messagesSend: Sequelize.INTEGER,
+            highestRoleID: Sequelize.INTEGER,
+            highestRoleName: Sequelize.STRING
+        });
 
         Channels.sync();
         Users.sync();
